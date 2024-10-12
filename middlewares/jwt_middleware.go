@@ -7,7 +7,19 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-func JWTMiddleware(next http.Handler) http.Handler {
+// JWTMiddleware is a middleware for validating JWT tokens
+type JWTMiddleware struct {
+	Secret string
+}
+
+// NewJWTMiddleware creates a new JWTMiddleware
+func NewJWTMiddleware(secret string) *JWTMiddleware {
+	return &JWTMiddleware{Secret: secret}
+}
+
+// ServeHTTP is the middleware function that validates JWT tokens
+func (j *JWTMiddleware) ServeHTTP(next http.Handler) http.Handler {
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenString := r.Header.Get("Authorization")
 		if tokenString == "" || !strings.HasPrefix(tokenString, "Bearer ") {
@@ -17,7 +29,7 @@ func JWTMiddleware(next http.Handler) http.Handler {
 
 		tokenString = strings.TrimPrefix(tokenString, "Bearer ")
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			return []byte(GetDotEnvVariable("JWT_SECRET")), nil
+			return []byte(j.Secret), nil
 		})
 
 		if err != nil || !token.Valid {

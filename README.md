@@ -1,22 +1,10 @@
-api rest usando jwt
-
-endpoints:
-- cadastro
-- login
-- recuperação de senha
-- listagem de usuarios
-
-// melhores praticas, validacoes e tratamento adequado de erros
-
-// Certifique-se de que o código esteja bem documentado e inclua instruções claras para a
-// configuração e execução do projeto, incluindo dependências e rotinas de inicialização.
 
 TODO: pagina get usuarios, testar chamada de frontend, verificando CORS
 
 docker-compose up -d
 
-go test ./... -coverprofile cover.out 
-go tool cover -func cover.out 
+go test ./... -coverprofile cover.out
+go tool cover -func cover.out
 
 ao criar usuario, verificar se ja existe email
 usar uuid

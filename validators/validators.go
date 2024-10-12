@@ -1,6 +1,7 @@
 package validators
 
 import (
+	"btmho/app/apis/endereco"
 	"btmho/app/models"
 	"fmt"
 	"net/http"
@@ -16,13 +17,12 @@ func init() {
 	validate = validator.New()
 }
 
-func ValidateUser(user models.User) error {
+func ValidateUser(user models.Usuario) error {
 	return validate.Struct(user)
 }
 
 func ValidateCEP(cep string) error {
-	url := fmt.Sprintf("https://viacep.com.br/ws/%s/json/", cep)
-	resp, err := httpGet(url)
+	resp, err := endereco.ValidateCEP(cep)
 	if err != nil || resp.StatusCode != 200 {
 		return fmt.Errorf("Invalid CEP")
 	}

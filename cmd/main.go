@@ -1,22 +1,44 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 
-	"btmho/app/middlewares"
+	"btmho/app/config"
+	"btmho/app/db"
+	"btmho/app/repositories"
 	"btmho/app/routes"
+	"btmho/app/services"
 )
 
 func main() {
-	// Obtém a porta das variáveis de ambiente
-	port := middlewares.GetDotEnvVariable("PORT")
-	if port == "" {
-		port = "8080" // Valor padrão caso não exista a variável PORT no .env
+	// Load the configuration
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Fatal("Error loading configuration:", err)
 	}
 
-	router := routes.SetupRoutes()
+	// Connect to the database
+	client := db.Connect(cfg) // Call the Connect function to establish a DB connection
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			log.Fatal("Failed to disconnect from database:", err)
+		}
+	}()
 
-	log.Println("Server running on port", port)
-	log.Fatal(http.ListenAndServe(":"+port, router))
+	// Criação de dependências
+	userRepo := repositories.NewMongoUserRepository(client) // Assumindo que você tenha um client de mongo configurado
+	userValidator := services.NewUserValidator()
+	passwordService := services.NewPasswordService()
+	tokenService := services.NewTokenService()
+	emailService := services.NewEmailService()
+
+	userService := services.NewUserService(userRepo)
+	authService := services.NewAuthService(userRepo, userValidator, passwordService, tokenService, emailService)
+
+	router := routes.SetupRoutes(userService, authService, cfg)
+
+	log.Println("Server running on port", cfg.Port)
+	log.Fatal(http.ListenAndServe(":"+cfg.Port, router))
 }
