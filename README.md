@@ -25,9 +25,14 @@ Air - utilizado para live reload
 go install github.com/air-verse/air@latest
 
 TODO:
-[ ] Corrigir testes unitários
 [ ] Rever mensagens de retorno
 [ ] Padronizar tudo em portugues
 [ ] Revisar todo o projeto
 [ ] Criar testes e2e
 
+O que seria bom que esse projeto tivesse para estar em produção?
+Monitoramento de logs, traces e métricas
+Configuração de pipeline de deploy
+Servidor de teste de email no docker-compose (ex: mailslurper)
+Teste de carga
+Teste e2e
