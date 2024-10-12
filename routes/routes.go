@@ -5,6 +5,7 @@ import (
 	"btmho/app/controllers"
 	"btmho/app/middlewares"
 	"btmho/app/services"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -31,15 +32,16 @@ func SetupRoutes(userService services.UserService, authService services.AuthServ
 // applyMiddlewares applies common middlewares to the router
 func applyMiddlewares(router *mux.Router) {
 	router.Use(middlewares.Logger)
-	router.Use(middlewares.TimeoutMiddleware(10))
+	router.Use(middlewares.CORS())
+	router.Use(middlewares.TimeoutMiddleware(10 * time.Second))
 }
 
 // configurePublicRoutes sets up public routes
 func configurePublicRoutes(router *mux.Router, authService services.AuthService) {
 	router.HandleFunc("/", controllers.Healthcheck).Methods("GET")
-	router.HandleFunc("/register", controllers.NewAuthController(authService).Register).Methods("POST")
-	router.HandleFunc("/login", controllers.NewAuthController(authService).Login).Methods("POST")
-	router.HandleFunc("/password-recovery", controllers.NewAuthController(authService).PasswordRecovery).Methods("POST")
+	router.HandleFunc("/auth/register", controllers.NewAuthController(authService).Register).Methods("POST")
+	router.HandleFunc("/auth/login", controllers.NewAuthController(authService).Login).Methods("POST")
+	router.HandleFunc("/auth/password-recovery", controllers.NewAuthController(authService).PasswordRecovery).Methods("POST")
 }
 
 // configureProtectedRoutes sets up protected routes

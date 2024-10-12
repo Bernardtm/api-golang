@@ -10,16 +10,17 @@ import (
 
 // AppConfig holds the application configuration values
 type AppConfig struct {
-	Port          string
-	MongoURI      string
-	MongoMinPool  uint64
-	MongoMaxPool  uint64
-	JWTSecret     string
+	Port         string
+	MongoURI     string
+	MongoMinPool uint64
+	MongoMaxPool uint64
+	JWTSecret    string
+	EnderecoAPI  string
 }
 
 // LoadConfig initializes the AppConfig struct with values from environment variables
 func LoadConfig() (*AppConfig, error) {
-  // Load the .env file
+	// Load the .env file
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, using environment variables directly.")
 	}
@@ -39,6 +40,7 @@ func LoadConfig() (*AppConfig, error) {
 		MongoMinPool: minPool,
 		MongoMaxPool: maxPool,
 		JWTSecret:    os.Getenv("JWT_SECRET"),
+		EnderecoAPI:  os.Getenv("ENDERECO_API"),
 	}, nil
 }
 

@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	clients "btmho/app/clients/endereco"
 	"btmho/app/config"
 	"btmho/app/db"
 	"btmho/app/repositories"
@@ -29,13 +30,13 @@ func main() {
 
 	// Criação de dependências
 	userRepo := repositories.NewMongoUserRepository(client) // Assumindo que você tenha um client de mongo configurado
-	userValidator := services.NewUserValidator()
 	passwordService := services.NewPasswordService()
-	tokenService := services.NewTokenService()
+	tokenService := services.NewTokenService(cfg)
 	emailService := services.NewEmailService()
+  enderecoClient := clients.NewEnderecoClient(cfg)
 
 	userService := services.NewUserService(userRepo)
-	authService := services.NewAuthService(userRepo, userValidator, passwordService, tokenService, emailService)
+	authService := services.NewAuthService(userRepo, passwordService, tokenService, emailService, enderecoClient)
 
 	router := routes.SetupRoutes(userService, authService, cfg)
 

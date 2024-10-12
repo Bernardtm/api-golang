@@ -1,8 +1,10 @@
 package services
 
 import (
+	clients "btmho/app/clients/endereco"
 	"btmho/app/models"
 	"btmho/app/repositories"
+	"btmho/app/validators"
 
 	"errors"
 )
@@ -17,39 +19,49 @@ type AuthService interface {
 // authService é a implementação concreta de AuthService
 type authService struct {
 	userRepo        repositories.UserRepository
-	userValidator   UserValidator
 	passwordService PasswordService
 	tokenService    TokenService
 	emailService    EmailService
+	enderecoClient  clients.EnderecoClient
 }
 
 // NewAuthService cria uma nova instância de AuthService
-func NewAuthService(userRepo repositories.UserRepository, userValidator UserValidator, passwordService PasswordService, tokenService TokenService, emailService EmailService) AuthService {
-	return &authService{userRepo: userRepo, userValidator: userValidator, passwordService: passwordService, tokenService: tokenService, emailService: emailService}
+func NewAuthService(userRepo repositories.UserRepository, passwordService PasswordService, tokenService TokenService, emailService EmailService, enderecoClient clients.EnderecoClient) AuthService {
+	return &authService{userRepo: userRepo, passwordService: passwordService, tokenService: tokenService, emailService: emailService, enderecoClient: enderecoClient}
 }
 
 // RegisterUser orquestra o registro de um novo usuário
-func (s *authService) RegisterUser(user *models.Usuario) error {
+func (s *authService) RegisterUser(usuario *models.Usuario) error {
 	// Valida os dados do usuário
-	if err := s.userValidator.Validate(user); err != nil {
+	if err := validators.ValidateUser(*usuario); err != nil {
+		return err
+	}
+
+	// Valida os dados do endereço do usuário
+	if err := validators.NewEnderecoValidator(s.enderecoClient).ValidateCEP(usuario.Endereco); err != nil {
+		return err
+	}
+
+	// Validate password
+	if err := validators.ValidatePassword(usuario.Senha, usuario.ConfirmarSenha); err != nil {
 		return err
 	}
 
 	// Verifica se o usuário já existe pelo e-mail
-	existingUser, _ := s.userRepo.GetUserByEmail(user.Email)
+	existingUser, _ := s.userRepo.GetUserByEmail(usuario.Email)
 	if existingUser != nil {
 		return errors.New("user already exists")
 	}
 
 	// Faz o hash da senha
-	hashedPassword, err := s.passwordService.HashPassword(user.Senha)
+	hashedPassword, err := s.passwordService.HashPassword(usuario.Senha)
 	if err != nil {
 		return errors.New("error hashing password")
 	}
-	user.Senha = hashedPassword
+	usuario.Senha = hashedPassword
 
 	// Cria o usuário no repositório
-	if err := s.userRepo.CreateUser(user); err != nil {
+	if err := s.userRepo.CreateUser(usuario); err != nil {
 		return errors.New("error saving user")
 	}
 

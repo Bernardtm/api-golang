@@ -9,13 +9,12 @@ import (
 
 // UserService define a interface para o serviço de usuários
 type UserService interface {
-	ListUsers() ([]models.Usuario, error)
+	ListUsers() ([]models.UserDTO, error)
 }
 
 // userService é a implementação concreta de UserService
 type userService struct {
 	userRepo        repositories.UserRepository
-	userValidator   UserValidator
 	passwordService PasswordService
 	tokenService    TokenService
 	emailService    EmailService
@@ -27,7 +26,7 @@ func NewUserService(userRepo repositories.UserRepository) UserService {
 }
 
 // ListUsers retrieves all users from the repository
-func (s *userService) ListUsers() ([]models.Usuario, error) {
+func (s *userService) ListUsers() ([]models.UserDTO, error) {
 	users, err := s.userRepo.GetAllUsers()
 	if err != nil {
 		return nil, errors.New("error fetching users")

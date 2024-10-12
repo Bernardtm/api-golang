@@ -1,27 +1,35 @@
+# api-golang
 
-TODO: pagina get usuarios, testar chamada de frontend, verificando CORS
-
+Rodando o banco:
 docker-compose up -d
 
+Rodando a aplicação com live reload:
+air
+
+Rodando a aplicação sem live reload:
+go run ./cmd/main.go
+
+Testes:
 go test ./... -coverprofile cover.out
 go tool cover -func cover.out
 
-ao criar usuario, verificar se ja existe email
-usar uuid
+
+# Principais dependencias:
+ github.com/dgrijalva/jwt-go
+ github.com/go-playground/validator/v10
+ go.mongodb.org/mongo-driver/mongo
+ github.com/gorilla/mux
+ github.com/joho/godotenv
+ github.com/stretchr/testify
+ github.com/rs/cors
 
 
+Air - utilizado para live reload
+go install github.com/air-verse/air@latest
 
-
-// Principais dependencias:
-// github.com/dgrijalva/jwt-go
-// github.com/go-playground/validator/v10
-// go.mongodb.org/mongo-driver/mongo
-// github.com/gorilla/mux
-// github.com/joho/godotenv
-// github.com/stretchr/testify
-
-go install
-// github.com/air-verse/air@latest - live reload
-air init
-
+TODO:
+Testes
+Rever mensagens de retorno
+Padronizar tudo em portugues
+Revisar todo o projeto
 

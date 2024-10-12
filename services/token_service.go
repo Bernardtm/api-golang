@@ -1,7 +1,7 @@
 package services
 
 import (
-	"btmho/app/middlewares"
+	"btmho/app/config"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -18,9 +18,9 @@ type tokenService struct {
 }
 
 // NewTokenService cria uma nova instância de TokenService
-func NewTokenService() TokenService {
+func NewTokenService(appConfig *config.AppConfig) TokenService {
 	return &tokenService{
-		jwtKey: []byte(middlewares.GetDotEnvVariable("JWT_SECRET")),
+		jwtKey: []byte(appConfig.JWTSecret),
 	}
 }
 
