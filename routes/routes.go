@@ -19,10 +19,7 @@ type RouteConfigurator interface {
 func SetupRoutes(userService services.UserService, authService services.AuthService, appConfig *config.AppConfig) *mux.Router {
 	router := mux.NewRouter()
 
-	// Apply common middlewares
 	applyMiddlewares(router)
-
-	// Configure routes
 	configurePublicRoutes(router, authService)
 	configureProtectedRoutes(router, userService, appConfig)
 
