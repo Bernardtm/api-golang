@@ -21,7 +21,10 @@ type MockUserService struct {
 
 func (m *MockUserService) ListUsers() ([]models.UserDTO, error) {
 	args := m.Called()
-	return args.Get(0).([]models.UserDTO), args.Error(1)
+	if user := args.Get(0); user != nil {
+		return user.([]models.UserDTO), args.Error(1)
+	}
+	return nil, args.Error(1)
 }
 
 func TestListUsers(t *testing.T) {

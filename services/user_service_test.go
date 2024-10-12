@@ -18,7 +18,11 @@ type MockUserRepository struct {
 // Implementa o método GetAllUsers no mock do repositório
 func (m *MockUserRepository) GetAllUsers() ([]models.UserDTO, error) {
 	args := m.Called()
-	return args.Get(0).([]models.UserDTO), args.Error(1)
+
+	if user := args.Get(0); user != nil {
+		return user.([]models.UserDTO), args.Error(1)
+	}
+	return nil, args.Error(1)
 }
 
 func TestListUsers_Success(t *testing.T) {

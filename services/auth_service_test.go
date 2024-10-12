@@ -28,7 +28,11 @@ func (m *MockUserRepository) CreateUser(user *models.Usuario) error {
 
 func (m *MockUserRepository) GetUserByEmail(email string) (*models.Usuario, error) {
 	args := m.Called(email)
-	return args.Get(0).(*models.Usuario), args.Error(1)
+
+	if user := args.Get(0); user != nil {
+		return user.(*models.Usuario), args.Error(1)
+	}
+	return nil, args.Error(1)
 }
 
 // Mock para PasswordService
@@ -86,9 +90,24 @@ func TestRegisterUser_Success(t *testing.T) {
 		Email:          "john.doe@example.com",
 		Senha:          "SecureP@ssw0rd!",
 		ConfirmarSenha: "SecureP@ssw0rd!",
+		Endereco: models.Endereco{
+			Rua:     "123 Main St",
+			Cidade:  "Sample City",
+			Estado:  "SP",
+			CEP:     "12345678",
+			Numero:  "123",
+		},
 	}
 
 	// Expectativas
+  // Mock the expected behavior of FetchCEPData
+	validAddress := &clients.EnderecoDTO{
+		Rua:     "123 Main St",
+		Cidade:  "Sample City",
+		Estado:  "SP",
+		Cep:     "12345-678",
+	}
+  enderecoClient.On("FetchCEPData", user.Endereco.CEP).Return(validAddress, nil) // Mock the response for CEP
 	userRepo.On("GetUserByEmail", user.Email).Return(nil, nil)                   // Usuário não existe
 	passwordService.On("HashPassword", user.Senha).Return("hashedPassword", nil) // Senha com sucesso
 	userRepo.On("CreateUser", user).Return(nil)                                  // Criação de usuário bem-sucedida
@@ -117,10 +136,25 @@ func TestRegisterUser_UserExists(t *testing.T) {
 		Email:          "jane.doe@example.com",
 		Senha:          "SecureP@ssw0rd!",
 		ConfirmarSenha: "SecureP@ssw0rd!",
+    Endereco: models.Endereco{
+			Rua:     "123 Main St",
+			Cidade:  "Sample City",
+			Estado:  "SP",
+			CEP:     "12345678",
+			Numero:  "123",
+		},
 	}
 
 	// Expectativas
 	userRepo.On("GetUserByEmail", user.Email).Return(user, nil) // Usuário já existe
+  // Mock the expected behavior of FetchCEPData
+	validAddress := &clients.EnderecoDTO{
+		Rua:     "123 Main St",
+		Cidade:  "Sample City",
+		Estado:  "SP",
+		Cep:     "12345-678",
+	}
+  enderecoClient.On("FetchCEPData", user.Endereco.CEP).Return(validAddress, nil) // Mock the response for CEP
 
 	// Executa o método
 	err := authService.RegisterUser(user)
@@ -185,7 +219,6 @@ func TestLogin_InvalidCredentials(t *testing.T) {
 
 	// Expectativas
 	userRepo.On("GetUserByEmail", credentials.Email).Return(nil, nil) // Usuário não encontrado
-
 	// Executa o método
 	token, err := authService.Login(credentials)
 

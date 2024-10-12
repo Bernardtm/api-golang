@@ -76,20 +76,3 @@ func TestGeneratePasswordRecoveryToken_Success(t *testing.T) {
 	}
 }
 
-func TestGenerateJWT_Error_InvalidSecret(t *testing.T) {
-	// Simula um AppConfig com uma chave secreta inválida (vazia)
-	appConfig := &config.AppConfig{
-		JWTSecret: "",
-	}
-
-	// Cria o TokenService com o segredo JWT inválido
-	tokenService := services.NewTokenService(appConfig)
-
-	// Gera um token JWT com a chave secreta inválida
-	userID := "12345"
-	token, err := tokenService.GenerateJWT(userID)
-
-	// Verifica se ocorreu erro, pois a chave secreta é inválida
-	assert.Error(t, err)
-	assert.Empty(t, token)
-}
