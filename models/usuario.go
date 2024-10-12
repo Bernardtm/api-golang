@@ -5,7 +5,7 @@ type Usuario struct {
 	NomeCompleto   string   `json:"nome_completo" validate:"required"`
 	Email          string   `json:"email" validate:"required,email"`
 	Senha          string   `json:"senha" validate:"required,min=8"`
-	ConfirmarSenha string   `json:"confirmar_senha" validate:"required,min=8" bson:"-"`
+	ConfirmarSenha string   `json:"confirmar_senha" validate:"required,min=8,eqfield=Senha" bson:"-"`
 	Endereco       Endereco `json:"endereco"`
 }
 

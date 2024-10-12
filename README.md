@@ -30,13 +30,15 @@ go run ./cmd/main.go
 
  github.com/rs/cors
 
+ github.com/stretchr/testify/mock
+
 
 Air - utilizado para live reload
 
 go install github.com/air-verse/air@latest
 
 TODO:
-Testes 
+Testes
 Rever mensagens de retorno
 Padronizar tudo em portugues
 Revisar todo o projeto

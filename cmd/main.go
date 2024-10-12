@@ -13,11 +13,12 @@ import (
 	"btmho/app/services"
 )
 
-func main() {
+// StartServer initializes and starts the server
+func StartServer() error {
 	// Load the configuration
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		log.Fatal("Error loading configuration:", err)
+		return err
 	}
 
 	// Connect to the database
@@ -28,12 +29,12 @@ func main() {
 		}
 	}()
 
-	// Criação de dependências
-	userRepo := repositories.NewMongoUserRepository(client) // Assumindo que você tenha um client de mongo configurado
+	// Create dependencies
+	userRepo := repositories.NewMongoUserRepository(client)
 	passwordService := services.NewPasswordService()
 	tokenService := services.NewTokenService(cfg)
 	emailService := services.NewEmailService()
-  enderecoClient := clients.NewEnderecoClient(cfg)
+	enderecoClient := clients.NewEnderecoClient(cfg)
 
 	userService := services.NewUserService(userRepo)
 	authService := services.NewAuthService(userRepo, passwordService, tokenService, emailService, enderecoClient)
@@ -41,5 +42,11 @@ func main() {
 	router := routes.SetupRoutes(userService, authService, cfg)
 
 	log.Println("Server running on port", cfg.Port)
-	log.Fatal(http.ListenAndServe(":"+cfg.Port, router))
+	return http.ListenAndServe(":"+cfg.Port, router)
+}
+
+func main() {
+	if err := StartServer(); err != nil {
+		log.Fatal("Error starting server:", err)
+	}
 }
