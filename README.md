@@ -12,9 +12,6 @@ Rodando a aplicação sem live reload:
 
 go run ./cmd/main.go
 
-Testes:
-go test ./... -coverprofile cover.out
-go tool cover -func cover.out
 
 
 # Principais dependencias:
@@ -39,7 +36,7 @@ Air - utilizado para live reload
 go install github.com/air-verse/air@latest
 
 TODO:
-Testes
+Testes 
 Rever mensagens de retorno
 Padronizar tudo em portugues
 Revisar todo o projeto
