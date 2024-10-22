@@ -51,4 +51,4 @@ TODO:
 [ ] logs, traces and metrics
 [ ] Pipeline CI/CD
 [ ] Email test server in docker-compose (eg. mailslurper)
-[ ] Vertical slicing architecture - organize folders by domain not by function
+[x] Vertical slicing architecture - organize folders by domain not by function
