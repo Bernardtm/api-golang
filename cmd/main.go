@@ -5,12 +5,13 @@ import (
 	"log"
 	"net/http"
 
-	clients "btmho/app/clients/endereco"
+	clients "btmho/app/clients/address"
 	"btmho/app/config"
 	"btmho/app/db"
-	"btmho/app/repositories"
+	"btmho/app/domain/auth"
+	"btmho/app/domain/email"
+	"btmho/app/domain/users"
 	"btmho/app/routes"
-	"btmho/app/services"
 )
 
 // StartServer initializes and starts the server
@@ -30,14 +31,14 @@ func StartServer() error {
 	}()
 
 	// Create dependencies
-	userRepo := repositories.NewMongoUserRepository(client)
-	passwordService := services.NewPasswordService()
-	tokenService := services.NewTokenService(cfg)
-	emailService := services.NewEmailService()
-	enderecoClient := clients.NewEnderecoClient(cfg)
+	userRepo := users.NewMongoUserRepository(client)
+	passwordService := auth.NewPasswordService()
+	tokenService := auth.NewTokenService(cfg)
+	emailService := email.NewEmailService()
+	addressClient := clients.NewAddressClient(cfg)
 
-	userService := services.NewUserService(userRepo)
-	authService := services.NewAuthService(userRepo, passwordService, tokenService, emailService, enderecoClient)
+	userService := users.NewUserService(userRepo)
+	authService := auth.NewAuthService(userRepo, passwordService, tokenService, emailService, addressClient)
 
 	router := routes.SetupRoutes(userService, authService, cfg)
 

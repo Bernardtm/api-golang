@@ -34,7 +34,7 @@ func TestLoadConfig_ValidEnvVars(t *testing.T) {
 	assert.Equal(t, uint64(5), config.MongoMinPool)
 	assert.Equal(t, uint64(15), config.MongoMaxPool)
 	assert.Equal(t, "secret", config.JWTSecret)
-	assert.Equal(t, "http://api.example.com", config.EnderecoAPI)
+	assert.Equal(t, "http://api.example.com", config.AddressAPI)
 }
 
 // TestLoadConfig_NoEnvFile tests loading configuration without a .env file
@@ -57,7 +57,7 @@ func TestLoadConfig_NoEnvFile(t *testing.T) {
 	assert.Equal(t, uint64(1), config.MongoMinPool)  // Default fallback
 	assert.Equal(t, uint64(10), config.MongoMaxPool) // Default fallback
 	assert.Equal(t, "", config.JWTSecret)
-	assert.Equal(t, "", config.EnderecoAPI)
+	assert.Equal(t, "", config.AddressAPI)
 }
 
 // TestParseUint tests the parseUint helper function

@@ -1,38 +1,54 @@
 # api-golang
 
-### Rodando o banco:
+### Running the database:
 `docker-compose up -d`
 
-### Rodando a aplicação com live reload:
+### Running with live reload:
 `air`
 
-### Rodando a aplicação sem live reload:
+### Running without live reload:
 `go run ./cmd/main.go`
 
 
-### Principais dependências:
+### Main dependencies:
 
  github.com/dgrijalva/jwt-go
+
  github.com/go-playground/validator/v10
+
  go.mongodb.org/mongo-driver/mongo
+
  github.com/gorilla/mux
+
  github.com/joho/godotenv
+
  github.com/stretchr/testify
+
  github.com/rs/cors
+
  github.com/stretchr/testify/mock
 
-Air - utilizado para live reload
+Air - live reload tool
 go install github.com/air-verse/air@latest
 
-TODO:
-[ ] Rever mensagens de retorno
-[ ] Padronizar tudo em portugues
-[ ] Revisar todo o projeto
-[ ] Criar testes e2e
+K6 - load testing tool
+sudo apt-get update && \\
+sudo apt-get install -y gnupg2 && \\
+curl -s https://dl.k6.io/key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/k6-archive-keyring.gpg && \\
+echo 'deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main' | sudo tee /etc/apt/sources.list.d/k6.list > /dev/null && \\
+sudo apt-get update && \\
+sudo apt-get install -y k6
 
-O que seria bom que esse projeto tivesse para estar em produção?
-Monitoramento de logs, traces e métricas
-Configuração de pipeline de deploy
-Servidor de teste de email no docker-compose (ex: mailslurper)
-Teste de carga
-Teste e2e
+TODO:
+[ ] Review error messages
+[ ] English only
+[ ] Review whole project
+[ ] Teste e2e
+[x] Load test
+[x] Makefile (list of all available commands)
+[ ] Graceful shutdown
+[ ] Use gin instead of gorilla mux
+[ ] logs, traces and metrics
+[ ] Pipeline CI/CD
+[ ] Email test server in docker-compose (eg. mailslurper)
+[ ] Vertical slicing architecture - organize folders by domain not by function

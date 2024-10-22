@@ -2,9 +2,10 @@ package routes
 
 import (
 	"btmho/app/config"
-	"btmho/app/controllers"
+	"btmho/app/domain/auth"
+	"btmho/app/domain/healthcheck"
+	"btmho/app/domain/users"
 	"btmho/app/middlewares"
-	"btmho/app/services"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -16,7 +17,7 @@ type RouteConfigurator interface {
 }
 
 // SetupRoutes initializes the router and applies the middleware and routes
-func SetupRoutes(userService services.UserService, authService services.AuthService, appConfig *config.AppConfig) *mux.Router {
+func SetupRoutes(userService users.UserService, authService auth.AuthService, appConfig *config.AppConfig) *mux.Router {
 	router := mux.NewRouter()
 
 	applyMiddlewares(router)
@@ -34,20 +35,20 @@ func applyMiddlewares(router *mux.Router) {
 }
 
 // configurePublicRoutes sets up public routes
-func configurePublicRoutes(router *mux.Router, authService services.AuthService) {
-	router.HandleFunc("/", controllers.Healthcheck).Methods("GET")
-	router.HandleFunc("/auth/register", controllers.NewAuthController(authService).Register).Methods("POST")
-	router.HandleFunc("/auth/login", controllers.NewAuthController(authService).Login).Methods("POST")
-	router.HandleFunc("/auth/password-recovery", controllers.NewAuthController(authService).PasswordRecovery).Methods("POST")
+func configurePublicRoutes(router *mux.Router, authService auth.AuthService) {
+	router.HandleFunc("/", healthcheck.Healthcheck).Methods("GET")
+	router.HandleFunc("/auth/register", auth.NewAuthController(authService).Register).Methods("POST")
+	router.HandleFunc("/auth/login", auth.NewAuthController(authService).Login).Methods("POST")
+	router.HandleFunc("/auth/password-recovery", auth.NewAuthController(authService).PasswordRecovery).Methods("POST")
 }
 
 // configureProtectedRoutes sets up protected routes
-func configureProtectedRoutes(router *mux.Router, userService services.UserService, appConfig *config.AppConfig) {
+func configureProtectedRoutes(router *mux.Router, userService users.UserService, appConfig *config.AppConfig) {
 	protected := router.PathPrefix("/").Subrouter()
 
 	// Initialize JWT middleware with the secret from appConfig
 	jwtMiddleware := middlewares.NewJWTMiddleware(appConfig.JWTSecret)
 	protected.Use(jwtMiddleware.ServeHTTP)
 
-	protected.HandleFunc("/users", controllers.NewUserController(userService).ListUsers).Methods("GET")
+	protected.HandleFunc("/users", users.NewUserController(userService).ListUsers).Methods("GET")
 }

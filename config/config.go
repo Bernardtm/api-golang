@@ -15,7 +15,7 @@ type AppConfig struct {
 	MongoMinPool uint64
 	MongoMaxPool uint64
 	JWTSecret    string
-	EnderecoAPI  string
+	AddressAPI   string
 }
 
 // LoadConfig initializes the AppConfig struct with values from environment variables
@@ -40,7 +40,7 @@ func LoadConfig() (*AppConfig, error) {
 		MongoMinPool: minPool,
 		MongoMaxPool: maxPool,
 		JWTSecret:    os.Getenv("JWT_SECRET"),
-		EnderecoAPI:  os.Getenv("ENDERECO_API"),
+		AddressAPI:   os.Getenv("ENDERECO_API"),
 	}, nil
 }
 
