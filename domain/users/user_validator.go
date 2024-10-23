@@ -5,7 +5,7 @@ import (
 )
 
 // ValidateUser validates a user model
-func ValidateUser(user User) error {
+func ValidateUser(user *User) error {
 	validate := validator.New()
 	return validate.Struct(user)
 }

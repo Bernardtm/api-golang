@@ -15,7 +15,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// MockAuthService is a mock implementation of AuthService
 type MockAuthService struct {
 	mock.Mock
 }

@@ -7,32 +7,32 @@ import (
 	"time"
 )
 
-// TimeoutMiddleware é um middleware que define um tempo limite para todas as requisições
+// TimeoutMiddleware is a middleware that sets a timeout for all requests
 func TimeoutMiddleware(timeout time.Duration) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Cria um novo contexto com timeout
+			// Creates a new context with a timeout
 			ctx, cancel := context.WithTimeout(r.Context(), timeout)
 			defer cancel()
 
-			// Substitui o request com o novo contexto
+			// Replaces the request with the new context
 			r = r.WithContext(ctx)
 
-			// Canal para capturar se o handler foi completado
+			// Channel to capture if the handler has completed
 			done := make(chan struct{})
 
 			go func() {
-				// Executa o próximo handler
+				// Executes the next handler
 				next.ServeHTTP(w, r)
 				close(done)
 			}()
 
 			select {
 			case <-done:
-				// Se o handler foi completado dentro do tempo limite
+				// If the handler completed within the timeout
 				return
 			case <-ctx.Done():
-				// Se o timeout foi atingido, cancela a requisição e responde com erro
+				// If the timeout is reached, cancel the request and respond with an error
 				log.Printf("Request timeout: %s %s", r.Method, r.URL.Path)
 				http.Error(w, "Request timeout", http.StatusGatewayTimeout)
 			}

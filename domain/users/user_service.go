@@ -4,17 +4,17 @@ import (
 	"errors"
 )
 
-// UserService define a interface para o serviço de usuários
+// UserService defines a interface for the user service
 type UserService interface {
 	ListUsers() ([]UserDTO, error)
 }
 
-// userService é a implementação concreta de UserService
+// userService is the UserService implementation
 type userService struct {
 	userRepo        UserRepository
 }
 
-// NewUserService cria uma nova instância de UserService
+// NewUserService creates a new UserService instance
 func NewUserService(userRepo UserRepository) UserService {
 	return &userService{userRepo: userRepo}
 }

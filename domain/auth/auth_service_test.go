@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// Mock para UserRepository
 type MockAddressClient struct {
 	mock.Mock
 }
@@ -22,12 +21,11 @@ func (m *MockAddressClient) FetchCEPData(cep string) (*clients.AddressDTO, error
 	return args.Get(0).(*clients.AddressDTO), args.Error(1)
 }
 
-// MockUserRepository é um mock do repositório de usuários
 type MockUserRepository struct {
 	mock.Mock
 }
 
-// Implementa o método GetAllUsers no mock do repositório
+// Implements the GetAllUsers method in the mock repository
 func (m *MockUserRepository) GetAllUsers() ([]users.UserDTO, error) {
 	args := m.Called()
 
@@ -51,7 +49,6 @@ func (m *MockUserRepository) GetUserByEmail(email string) (*users.User, error) {
 	return nil, args.Error(1)
 }
 
-// Mock para PasswordService
 type MockPasswordService struct {
 	mock.Mock
 }
@@ -66,7 +63,6 @@ func (m *MockPasswordService) CheckPasswordHash(password, hash string) bool {
 	return args.Bool(0)
 }
 
-// Mock para TokenService
 type MockTokenService struct {
 	mock.Mock
 }
@@ -81,7 +77,6 @@ func (m *MockTokenService) GeneratePasswordRecoveryToken(email string) (string, 
 	return args.String(0), args.Error(1)
 }
 
-// Mock para EmailService
 type MockEmailService struct {
 	mock.Mock
 }
@@ -91,7 +86,6 @@ func (m *MockEmailService) SendRecoveryEmail(email, token string) error {
 	return args.Error(0)
 }
 
-// Teste para RegisterUser
 func TestRegisterUser_Success(t *testing.T) {
 	userRepo := new(MockUserRepository)
 	passwordService := new(MockPasswordService)
@@ -115,7 +109,6 @@ func TestRegisterUser_Success(t *testing.T) {
 		},
 	}
 
-	// Expectativas
 	// Mock the expected behavior of FetchCEPData
 	validAddress := &clients.AddressDTO{
 		Street: "123 Main St",
@@ -128,16 +121,13 @@ func TestRegisterUser_Success(t *testing.T) {
 	passwordService.On("HashPassword", user.Password).Return("hashedPassword", nil) // Password com sucesso
 	userRepo.On("CreateUser", user).Return(nil)                                     // Criação de usuário bem-sucedida
 
-	// Executa o método
 	err := authService.RegisterUser(user)
 
-	// Verifica as asserções
 	assert.NoError(t, err)
 	userRepo.AssertExpectations(t)
 	passwordService.AssertExpectations(t)
 }
 
-// Teste para RegisterUser quando o usuário já existe
 func TestRegisterUser_UserExists(t *testing.T) {
 	userRepo := new(MockUserRepository)
 	passwordService := new(MockPasswordService)
@@ -161,8 +151,7 @@ func TestRegisterUser_UserExists(t *testing.T) {
 		},
 	}
 
-	// Expectativas
-	userRepo.On("GetUserByEmail", user.Email).Return(user, nil) // Usuário já existe
+	userRepo.On("GetUserByEmail", user.Email).Return(user, nil) // User already exists
 	// Mock the expected behavior of FetchCEPData
 	validAddress := &clients.AddressDTO{
 		Street: "123 Main St",
@@ -172,16 +161,13 @@ func TestRegisterUser_UserExists(t *testing.T) {
 	}
 	addressClient.On("FetchCEPData", user.Address.CEP).Return(validAddress, nil) // Mock the response for CEP
 
-	// Executa o método
 	err := authService.RegisterUser(user)
 
-	// Verifica as asserções
 	assert.Error(t, err)
 	assert.Equal(t, "user already exists", err.Error())
 	userRepo.AssertExpectations(t)
 }
 
-// Teste para Login
 func TestLogin_Success(t *testing.T) {
 	userRepo := new(MockUserRepository)
 	passwordService := new(MockPasswordService)
@@ -202,15 +188,12 @@ func TestLogin_Success(t *testing.T) {
 		Password: "hashedPassword",
 	}
 
-	// Expectativas
-	userRepo.On("GetUserByEmail", credentials.Email).Return(user, nil)                        // Usuário encontrado
-	passwordService.On("CheckPasswordHash", credentials.Password, user.Password).Return(true) // Password correta
-	tokenService.On("GenerateJWT", user.Id).Return("token", nil)                              // Gera token com sucesso
+	userRepo.On("GetUserByEmail", credentials.Email).Return(user, nil)                        // Usuer found
+	passwordService.On("CheckPasswordHash", credentials.Password, user.Password).Return(true) // Password correct
+	tokenService.On("GenerateJWT", user.Id).Return("token", nil)                              // Generate token
 
-	// Executa o método
 	token, err := authService.Login(credentials)
 
-	// Verifica as asserções
 	assert.NoError(t, err)
 	assert.Equal(t, "token", token)
 	userRepo.AssertExpectations(t)
@@ -218,7 +201,6 @@ func TestLogin_Success(t *testing.T) {
 	tokenService.AssertExpectations(t)
 }
 
-// Teste para Login com credenciais inválidas
 func TestLogin_InvalidCredentials(t *testing.T) {
 	userRepo := new(MockUserRepository)
 	passwordService := new(MockPasswordService)
@@ -233,19 +215,15 @@ func TestLogin_InvalidCredentials(t *testing.T) {
 		Password: "WrongPassword",
 	}
 
-	// Expectativas
-	userRepo.On("GetUserByEmail", credentials.Email).Return(nil, nil) // Usuário não encontrado
-	// Executa o método
+	userRepo.On("GetUserByEmail", credentials.Email).Return(nil, nil) // User not found
 	token, err := authService.Login(credentials)
 
-	// Verifica as asserções
 	assert.Error(t, err)
 	assert.Equal(t, "invalid credentials", err.Error())
 	assert.Empty(t, token)
 	userRepo.AssertExpectations(t)
 }
 
-// Teste para RecoverPassword
 func TestRecoverPassword_Success(t *testing.T) {
 	userRepo := new(MockUserRepository)
 	passwordService := new(MockPasswordService)
@@ -261,22 +239,18 @@ func TestRecoverPassword_Success(t *testing.T) {
 		Email: email,
 	}
 
-	// Expectativas
-	userRepo.On("GetUserByEmail", email).Return(user, nil)                               // Usuário encontrado
-	tokenService.On("GeneratePasswordRecoveryToken", email).Return("recoveryToken", nil) // Gera token de recuperação
-	emailService.On("SendRecoveryEmail", email, "recoveryToken").Return(nil)             // Envia email com sucesso
+	userRepo.On("GetUserByEmail", email).Return(user, nil)                               // User found
+	tokenService.On("GeneratePasswordRecoveryToken", email).Return("recoveryToken", nil) // Generate recovery token
+	emailService.On("SendRecoveryEmail", email, "recoveryToken").Return(nil)             // Sends email
 
-	// Executa o método
 	err := authService.RecoverPassword(email)
 
-	// Verifica as asserções
 	assert.NoError(t, err)
 	userRepo.AssertExpectations(t)
 	tokenService.AssertExpectations(t)
 	emailService.AssertExpectations(t)
 }
 
-// Teste para RecoverPassword com usuário não encontrado
 func TestRecoverPassword_UserNotFound(t *testing.T) {
 	userRepo := new(MockUserRepository)
 	passwordService := new(MockPasswordService)
@@ -288,13 +262,10 @@ func TestRecoverPassword_UserNotFound(t *testing.T) {
 
 	email := "non.existent@example.com"
 
-	// Expectativas
-	userRepo.On("GetUserByEmail", email).Return(nil, nil) // Usuário não encontrado
+	userRepo.On("GetUserByEmail", email).Return(nil, nil) // User not found
 
-	// Executa o método
 	err := authService.RecoverPassword(email)
 
-	// Verifica as asserções
 	assert.Error(t, err)
 	assert.Equal(t, "user not found", err.Error())
 	userRepo.AssertExpectations(t)

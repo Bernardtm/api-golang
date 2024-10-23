@@ -1,41 +1,42 @@
-# Etapa de build
+# Build stage
 FROM golang:nanoserver-ltsc2022 AS builder
 
-# Configura o diretório de trabalho dentro do contêiner
+# Set the working directory inside the container
 WORKDIR /app
 
 RUN go install github.com/air-verse/air@latest
 
-# Copia os arquivos de dependência do Go e faz o download dos módulos
+# Copy the Go dependency files and download the modules
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copia o restante do código da aplicação
+# Copy the rest of the application code
 COPY . .
 
-# Compila a aplicação
+# Compile the application
 RUN go build -o main ./cmd/main.go
 
-# Etapa final
+# Final stage
 FROM alpine:3.18
 
-# Cria um usuário não-root para executar a aplicação (por segurança)
+# Create a non-root user to run the application (for security)
 RUN adduser -D -g '' appuser
 
-# Define o diretório de trabalho
+# Set the working directory
 WORKDIR /app
 
-# Copia o binário compilado da etapa de build
+# Copy the compiled binary from the build stage
 COPY --from=builder /app/main .
 
-# Ajusta as permissões
+# Adjust permissions
 RUN chown -R appuser /app
 
-# Muda para o usuário não-root
+# Switch to the non-root user
 USER appuser
 
-# Expõe a porta que a aplicação usará
+# Expose the port that the application will use
 EXPOSE 8080
 
-# Comando para executar a aplicação
+# Command to run the application
 CMD ["air", "-c", ".air.toml"]
+

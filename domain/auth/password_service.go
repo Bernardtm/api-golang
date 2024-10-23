@@ -9,21 +9,21 @@ type PasswordService interface {
 	CheckPasswordHash(password, hash string) bool
 }
 
-// passwordService é a implementação concreta de PasswordService
+// passwordService is the concrete implementation of PasswordService
 type passwordService struct{}
 
-// NewPasswordService cria uma nova instância de PasswordService
+// NewPasswordService creates a new instance of PasswordService
 func NewPasswordService() PasswordService {
 	return &passwordService{}
 }
 
-// HashPassword faz o hash da password
+// HashPassword hashes the password
 func (s *passwordService) HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
 }
 
-// CheckPasswordHash verifica se a password informada corresponde ao hash
+// CheckPasswordHash verifies if the provided password matches the hash
 func (s *passwordService) CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil

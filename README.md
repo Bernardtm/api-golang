@@ -41,14 +41,14 @@ sudo apt-get install -y k6
 
 TODO:
 [ ] Review error messages
-[ ] English only
-[ ] Review whole project
+[x] English only
+[x] Review whole project
 [ ] Teste e2e
 [x] Load test
 [x] Makefile (list of all available commands)
 [ ] Graceful shutdown
 [ ] Use gin instead of gorilla mux
-[ ] logs, traces and metrics
+[ ] Logs, traces and metrics
 [ ] Pipeline CI/CD
 [ ] Email test server in docker-compose (eg. mailslurper)
 [x] Vertical slicing architecture - organize folders by domain not by function

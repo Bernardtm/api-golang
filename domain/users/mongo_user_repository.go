@@ -29,10 +29,8 @@ func (r *MongoUserRepository) GetUserByEmail(email string) (*User, error) {
 	err := collection.FindOne(context.TODO(), bson.M{"email": email}).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			// Return nil and no error if no document is found
 			return nil, nil
 		}
-		// Return the error if it's not a "no documents" error
 		return nil, err
 	}
 	return &user, err

@@ -1,4 +1,4 @@
 #!/bin/sh
 docker-compose ps
 
-# TODO fazer requisicao verificando se esta retornando 200
+# TODO healthcheck request 

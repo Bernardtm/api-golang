@@ -9,12 +9,12 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// MockUserRepository é um mock do repositório de usuários
+// MockUserRepository is a mock of the user repository
 type MockUserRepository struct {
 	mock.Mock
 }
 
-// Implementa o método GetAllUsers no mock do repositório
+// Implements the GetAllUsers method in the mock repository
 func (m *MockUserRepository) GetAllUsers() ([]users.UserDTO, error) {
 	args := m.Called()
 
@@ -39,10 +39,10 @@ func (m *MockUserRepository) GetUserByEmail(email string) (*users.User, error) {
 }
 
 func TestListUsers_Success(t *testing.T) {
-	// Cria uma instância do mock do repositório de usuários
+	// Creates a new userRepository mock instance
 	mockRepo := new(MockUserRepository)
 
-	// Define o comportamento esperado: uma lista de usuários será retornada
+	// Defines a expected behaviour: an user list is returned
 	mockUsers := []users.UserDTO{
 		{
 			ID:    "123",
@@ -55,39 +55,27 @@ func TestListUsers_Success(t *testing.T) {
 	}
 	mockRepo.On("GetAllUsers").Return(mockUsers, nil)
 
-	// Cria uma instância do serviço de usuários com o mock
 	userService := users.NewUserService(mockRepo)
 
-	// Executa o método ListUsers
 	users, err := userService.ListUsers()
 
-	// Verifica se não houve erro
 	assert.NoError(t, err)
-	// Verifica se os usuários retornados são os esperados
 	assert.Equal(t, mockUsers, users)
-
-	// Verifica se o método GetAllUsers foi chamado uma vez
 	mockRepo.AssertNumberOfCalls(t, "GetAllUsers", 1)
 }
 
 func TestListUsers_Error(t *testing.T) {
-	// Cria uma instância do mock do repositório de usuários
 	mockRepo := new(MockUserRepository)
 
-	// Define o comportamento esperado: um erro será retornado
 	mockRepo.On("GetAllUsers").Return(nil, errors.New("database error"))
 
-	// Cria uma instância do serviço de usuários com o mock
 	userService := users.NewUserService(mockRepo)
 
-	// Executa o método ListUsers
 	users, err := userService.ListUsers()
 
-	// Verifica se o erro foi retornado corretamente
 	assert.Error(t, err)
 	assert.Nil(t, users)
 	assert.EqualError(t, err, "error fetching users")
 
-	// Verifica se o método GetAllUsers foi chamado uma vez
 	mockRepo.AssertNumberOfCalls(t, "GetAllUsers", 1)
 }

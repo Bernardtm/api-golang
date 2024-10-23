@@ -24,7 +24,7 @@ func TestValidateUser_Success(t *testing.T) {
 		},
 	}
 
-	err := users.ValidateUser(user)
+	err := users.ValidateUser(&user)
 	assert.NoError(t, err)
 }
 
@@ -43,7 +43,7 @@ func TestValidateUser_MissingFullName(t *testing.T) {
 		},
 	}
 
-	err := users.ValidateUser(user)
+	err := users.ValidateUser(&user)
 	assert.Error(t, err)
 }
 
@@ -63,7 +63,7 @@ func TestValidateUser_InvalidEmailFormat(t *testing.T) {
 		},
 	}
 
-	err := users.ValidateUser(user)
+	err := users.ValidateUser(&user)
 	assert.Error(t, err)
 }
 
@@ -82,7 +82,7 @@ func TestValidateUser_MissingPassword(t *testing.T) {
 		},
 	}
 
-	err := users.ValidateUser(user)
+	err := users.ValidateUser(&user)
 	assert.Error(t, err)
 }
 
@@ -102,7 +102,7 @@ func TestValidateUser_PasswordMismatch(t *testing.T) {
 		},
 	}
 
-	err := users.ValidateUser(user)
+	err := users.ValidateUser(&user)
 	assert.Error(t, err)
 }
 
@@ -122,7 +122,7 @@ func TestValidateUser_InvalidPasswordLength(t *testing.T) {
 		},
 	}
 
-	err := users.ValidateUser(user)
+	err := users.ValidateUser(&user)
 	assert.Error(t, err)
 }
 
@@ -142,7 +142,7 @@ func TestValidateUser_MissingAddressFields(t *testing.T) {
 		},
 	}
 
-	err := users.ValidateUser(user)
+	err := users.ValidateUser(&user)
 	assert.Error(t, err)
 }
 
@@ -162,6 +162,6 @@ func TestValidateUser_InvalidCEPLength(t *testing.T) {
 		},
 	}
 
-	err := users.ValidateUser(user)
+	err := users.ValidateUser(&user)
 	assert.Error(t, err)
 }

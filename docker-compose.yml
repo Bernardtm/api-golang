@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  # Aplicação
+  # App
   # app:
   #   build: .
   #   ports:
@@ -8,7 +8,7 @@ services:
   #   depends_on:
   #     - mongo
 
-  # MongoDB - banco no-sql
+  # MongoDB
   mongo:
     image: mongo:8.0.1
     container_name: mongo
@@ -23,7 +23,7 @@ services:
     networks:
       - mongo-network
 
-  # Client para visualizar e interagir com o MongoDB
+  # MongoDB Client 
   mongo-express:
     image: mongo-express:1.0.2-20-alpine3.19
     container_name: mongo-express
