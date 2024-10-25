@@ -70,3 +70,5 @@ TODO:
 [ ] Email test server in docker-compose (eg. mailslurper)
 
 [x] Vertical slicing architecture - organize folders by domain not by function
+
+[ ] Use http client with cancel feature in address request?
