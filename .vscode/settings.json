@@ -1,4 +1,41 @@
 {
-    "files.autoSave": "afterDelay",
+    // General Editor Settings
+    "files.autoSave": "afterDelay", // Auto-save files after a delay
+    "files.autoSaveDelay": 1000,
+    "editor.formatOnSave": true, // Automatically format files on save
+    "editor.tabSize": 4, // Set tab size for Go files
+    "files.trimTrailingWhitespace": true, // Remove trailing whitespace on save
+    "files.insertFinalNewline": true, // Ensure a newline at the end of files
+    // Go Specific Settings
+    "go.useLanguageServer": true, // Use the Go Language Server (gopls)
+    "gopls": {
+        "staticcheck": true // Enable additional static analysis
+    },
+    "go.formatTool": "gofmt", // Tool for formatting (e.g., gofmt, goimports)
+    // "go.lintTool": "golangci-lint", // Linting tool (e.g., golangci-lint, gometalinter)
+    "go.lintFlags": [
+        "--fast"
+    ], // Additional flags for the linter
+    // "go.vetOnSave": "workspace", // Run `go vet` on save for the workspace
+    "go.testOnSave": false, // Disable running tests automatically on save
+    "go.coverageDecorator": {
+        "type": "gutter", // Show test coverage as gutter decorations
+        "coveredHighlightColor": "rgba(64, 128, 64, 0.5)",
+        "uncoveredHighlightColor": "rgba(128, 64, 64, 0.5)"
+    },
+    "go.testFlags": [
+        "-v"
+    ], // Flags passed to `go test`
+    // Testing
+    "go.coverOnSave": false, // Disable test coverage report on save
+    "go.testTimeout": "30s", // Default timeout for tests
+    // Advanced Features
+    "go.toolsManagement.autoUpdate": true, // Automatically update Go tools
+    "go.addTags": {
+        "tags": "json", // Tags to add to struct fields
+        "options": "omitempty", // Options for struct tags
+        "promptForTags": true // Prompt before adding tags
+    },
+    // Makefile
     "makefile.configureOnOpen": false
 }

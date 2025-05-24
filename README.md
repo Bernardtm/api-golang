@@ -1,74 +1,141 @@
-# api-golang
+# Golang Backend
 
-### Running the database:
-`docker-compose up -d`
+## Project Overview
+Golang Backend is a robust REST API.
 
-### Running with live reload:
-`air`
+## Features
+- Golang Gin REST API
+- JWT Authentication.
 
-### Running without live reload:
-`go run ./cmd/main.go`
+## Golang Layer Model (Universal Reference Architecture)
+
+```sh
+
+.github/                # GitHub Actions configuration or other workflow settings
+.vscode/                # Visual Studio Code-specific configuration
+cmd/
+    app/                # Main application (entry point)
+configs/                # Configuration files
+docs/                   # Project documentation
+internal/               # Private project code, not exported
+    core/               # Core domain logic
+        shareds/        # Core-shared logic
+        users/          # User-specific logic (e.g., authentication, permissions)
+    infra/              # Infrastructure implementations (e.g., DB, external APIs)
+        middleware/     # HTTP Middlewares
+    utils/              # Utilities and helper functions
+migrations/             # Database migration scripts
+tests/                  # Infrastructure automated tests
+pkg/                    # Shared code among multiple projects or components
+api/                    # API definitions (e.g., gRPC Protobuf or Swagger/OpenAPI)
+scripts/                # Automation, CI/CD scripts
+.env                    # Environment variables file
+.env.example            # Environment variables file example
+docker-compose.yml      # Docker Compose file for multi-container configuration
+Dockerfile              # Dockerfile for image building
+go.mod                  # Go dependencies checksum file
+go.sum                  # Checksums of Go dependencies
+main.go                 # Main application entry point
+Makefile                # Build automation using make
+README.md               # Project description
 
 
-### Main dependencies:
+```
 
- github.com/dgrijalva/jwt-go
+---
+### Relevant Golang Libraries
+Update packages:
 
- github.com/go-playground/validator/v10
+```shell
+$ go mod tidy
+```
 
- go.mongodb.org/mongo-driver/mongo
+Install dependencies:
 
- github.com/gorilla/mux
+```shell
+$ go get github.com/dgrijalva/jwt-go
+$ go get github.com/go-playground/validator/v10
+$ go get github.com/gin-gonic/gin
+$ go get go.mongodb.org/mongo-driver/mongo
+$ go get github.com/joho/godotenv
+$ go get github.com/gin-contrib/gzip
+$ go get github.com/go-faker/faker/v4
+```
 
- github.com/joho/godotenv
+Install Swagger (swaggo):
 
- github.com/stretchr/testify
+```shell
+$ go get -u github.com/swaggo/swag/cmd/swag
+$ go get -u github.com/swaggo/gin-swagger
+$ go get -u github.com/swaggo/files
+$ go install github.com/swaggo/swag/cmd/swag@latest
+```
 
- github.com/rs/cors
+Install AWS SDK for S3:
 
- github.com/stretchr/testify/mock
+```shell
+$ go get -u github.com/aws/aws-sdk-go-v2
+$ go get -u github.com/aws/aws-sdk-go-v2/config
+$ go get -u github.com/aws/aws-sdk-go-v2/service/s3
+```
 
-Air - live reload tool
-`go install github.com/air-verse/air@latest`
+Install Debugger (delve):
 
-K6 - load testing tool
+```shell
+$ go install github.com/go-delve/delve/cmd/dlv@latest
+```
 
-sudo apt-get update && \\
+Install 'Testing Schema Validation' for Mocking:
 
-sudo apt-get install -y gnupg2 && \\
+```shell
+$ go get github.com/stretchr/testify
+```
 
-curl -s https://dl.k6.io/key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/k6-archive-keyring.gpg && \\
+Install Go Releaser:
 
-echo 'deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main' | sudo tee /etc/apt/sources.list.d/k6.list > /dev/null && \\
+```shell
+$ go install github.com/goreleaser/goreleaser/v2@latest
+```
 
-sudo apt-get update && \\
 
-sudo apt-get install -y k6
+Install golang migrate for migrations:
 
-TODO:
+```shell
+$ go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+```
 
-[ ] Review error messages
+### Check Swagger version:
 
-[x] English only
+```shell
+$ swag --version
+```
 
-[x] Review whole project
+### Generate Swagger:
 
-[ ] Teste e2e
+```shell
+$ swag init --parseDependency -g cmd/main.go
+# or
+$ swag init --parseDependency
+```
+--parseDependency flag is needed to make sure Swag correctly analyzes and includes all code dependencies, like encoding/json
 
-[x] Load test
+### Create the App and database container via docker-compose and Dockerfile:
 
-[x] Makefile (list of all available commands)
+```shell
+$ docker-compose up --build
+```
 
-[ ] Graceful shutdown
+### Application deployment (local testing):
 
-[ ] Use gin instead of gorilla mux
+```shell
+$ go run main.go
+```
 
-[ ] Logs, traces and metrics
+### Swagger URL:
 
-[ ] Pipeline CI/CD
+```shell
+http://localhost:8081/swagger/index.html
+```
 
-[ ] Email test server in docker-compose (eg. mailslurper)
+---
 
-[x] Vertical slicing architecture - organize folders by domain not by function
-
-[ ] Use http client with cancel feature in address request?

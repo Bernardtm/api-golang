@@ -1,42 +1,32 @@
-# Build stage
-FROM golang:nanoserver-ltsc2022 AS builder
+# Start from the official Golang base image
+FROM golang:1.23-alpine AS builder
 
-# Set the working directory inside the container
+# Set the Current Working Directory inside the container
 WORKDIR /app
 
-RUN go install github.com/air-verse/air@latest
-
-# Copy the Go dependency files and download the modules
+# Copy go.mod and go.sum files
 COPY go.mod go.sum ./
+
+# Download all Go modules
 RUN go mod download
 
-# Copy the rest of the application code
+# Copy the rest of the application code (this is where it copies all the source files)
 COPY . .
 
-# Compile the application
-RUN go build -o main ./cmd/main.go
+# Build the Go app inside the cmd/myapp directory
+RUN go build -o /bernardtm/backend ./cmd/myapp
 
-# Final stage
-FROM alpine:3.18
+# Create a smaller image for the final container
+FROM alpine:latest
 
-# Create a non-root user to run the application (for security)
-RUN adduser -D -g '' appuser
+# Set the current working directory inside the container
+WORKDIR /root/
 
-# Set the working directory
-WORKDIR /app
+# Copy the binary from the builder image
+COPY --from=builder /bernardtm/backend .
 
-# Copy the compiled binary from the build stage
-COPY --from=builder /app/main .
-
-# Adjust permissions
-RUN chown -R appuser /app
-
-# Switch to the non-root user
-USER appuser
-
-# Expose the port that the application will use
+# Expose the application port (replace with your app's port)
 EXPOSE 8080
 
-# Command to run the application
-CMD ["air", "-c", ".air.toml"]
-
+# Command to run the Go program
+CMD ["./bernardtm/backend"]

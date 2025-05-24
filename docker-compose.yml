@@ -1,45 +1,38 @@
-version: '3.8'
+version: '3'
 services:
-  # App
   # app:
-  #   build: .
+  #   image: backend
+  #   container_name: backend
   #   ports:
   #     - "8080:8080"
+  #   volumes:
+  #     - .:/app
   #   depends_on:
-  #     - mongo
+  #     - postgres
+  #     - mailpit
 
-  # MongoDB
-  mongo:
-    image: mongo:8.0.1
-    container_name: mongo
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_DB: default_database
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - 5432:5432
+
+  mongodb:
+    image: mongo:4.4
+    container_name: mongodb
     ports:
       - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-      MONGO_INITDB_DATABASE: myapp
-    networks:
-      - mongo-network
+      MONGO_INITDB_ROOT_USERNAME: mongo  # Set MongoDB root username
+      MONGO_INITDB_ROOT_PASSWORD: mongo  # Set MongoDB root password
 
-  # MongoDB Client 
-  mongo-express:
-    image: mongo-express:1.0.2-20-alpine3.19
-    container_name: mongo-express
+  mailpit:
+    image: 'axllent/mailpit:latest'
+    container_name: mailpit
     ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: pass
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_SERVER: mongo
-    networks:
-      - mongo-network
-
-volumes:
-  mongo-data:
-
-networks:
-  mongo-network:
+      - '1025:1025'
+      - '8025:8025'

@@ -1,0 +1,74 @@
+name: Build and Deploy with Docker
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Optional: Set up Go if you are building a Go application
+      - name: Set up Go 1.23
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.23
+
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.mod') }}
+          restore-keys: |
+            ${{ runner.os }}-go-mod-
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH" > ~/.ssh/infratech-key.pem
+          chmod 600 ~/.ssh/infratech-key.pem  # Set correct permissions for the private key
+
+        env:
+          SSH: ${{ secrets.SSH }}
+
+      # - name: Install dependencies
+      #   run: go mod tidy
+
+      # - name: Build the Go application
+      #   run: go build .
+
+      - name: Create tarball of the folder
+        run: |
+          mkdir dist
+          tar --exclude='.git' --exclude='*.exe' --exclude='dist' --exclude='docs/sql' --exclude='docs/_img' -czf $GITHUB_WORKSPACE/dist/backend.tar.gz .
+
+      - name: Deploy to EC2
+        if: success()
+        run: |
+          echo "Deploying to EC2..."
+          
+          # Set environment variables for SSH access
+          # EC2_HOST="${{ secrets.EC2_HOST }}"
+          # EC2_USER="${{ secrets.EC2_USER }}"
+          EC2_PATH="/home/ubuntu"
+        
+          # Copy tarball to EC2 instance
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/infratech-key.pem $GITHUB_WORKSPACE/dist/backend.tar.gz $EC2_USER@$EC2_HOST:$EC2_PATH
+
+          # SSH into EC2 and deploy
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/infratech-key.pem $EC2_USER@$EC2_HOST <<EOF
+            /home/ubuntu/deploy.sh
+          EOF
+
+        env:
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          
+      - name: Clean up local tarball
+        run: |
+          rm $GITHUB_WORKSPACE/dist/backend.tar.gz
